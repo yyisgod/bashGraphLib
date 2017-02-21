@@ -1,9 +1,8 @@
 /*************************************************************************
-  Copyright (C), 2016, TP-LINK TECHNOLOGIES CO., LTD.
   File name:    Error.cpp
   Version:      1.0
   Description:  
-  Author:       Yan yu
+  Author:       Yy <yyisgod@yeah.net>
   Create Date:  2016-09-02
  ************************************************************************/
 
@@ -15,4 +14,8 @@ Error::Error(string msg_) {
 
 CreateError::CreateError(string baseClass_, string msg_):Error(msg_) {
 	baseClass = baseClass_;
+}
+
+BorderCrossError::BorderCrossError(string className, string msg):Error(msg) {
+	this->className = className;
 }

@@ -1,9 +1,8 @@
 /*************************************************************************
-  Copyright (C), 2016, TP-LINK TECHNOLOGIES CO., LTD.
   File name:    Error.h
   Version:      1.0
   Description:  Error类
-  Author:       Yan yu
+  Author:       Yy <yyisgod@yeah.net>
   Create Date:  2016-09-02
  ************************************************************************/
 
@@ -27,4 +26,12 @@ public:
 public:
 	string baseClass;
 };
+
+class BorderCrossError : public Error {
+public:
+	BorderCrossError(string className, string msg);
+public:
+	string className;
+};
+
 #endif

@@ -1,9 +1,8 @@
 /*************************************************************************
-  Copyright (C), 2016, TP-LINK TECHNOLOGIES CO., LTD.
   File name:    types.h
   Version:      1.0
   Description:  types definition
-  Author:       Yan yu
+  Author:       Yy <yyisgod@yeah.net>
   Create Date:  2016-08-05
  ************************************************************************/
 
@@ -32,7 +31,7 @@
 
 #include "Error.h"
 
-enum color {
+enum color:char{
 	none = 0,
 	red,
 	light_red,
@@ -56,37 +55,53 @@ struct _colorMap {
 	string str;
 };
 
-//string colorsMap[16] = {
-//	NONE,
-//	RED,
-//	LIGHT_RED,
-//	GREEN,
-//	LIGHT_GREEN,
-//	BLUE,
-//	LIGHT_BLUE,
-//	DARK_GRAY,
-//	CYAN,
-//	LIGHT_CYAN,
-//	PURPLE,
-//	LIGHT_PURPLE,
-//	BROWN,
-//	YELLOW,
-//	LIGHT_GRAY,
-//	WHITE
-//};
+const string colorsMap[16] = {
+	NONE,
+	RED,
+	LIGHT_RED,
+	GREEN,
+	LIGHT_GREEN,
+	BLUE,
+	LIGHT_BLUE,
+	DARK_GRAY,
+	CYAN,
+	LIGHT_CYAN,
+	PURPLE,
+	LIGHT_PURPLE,
+	BROWN,
+	YELLOW,
+	LIGHT_GRAY,
+	WHITE
+};
 typedef unsigned int uint;
 
 struct Rect{
-	uint top;
-	uint left;
-	uint height;
-	uint width;
+	int top;
+	int left;
+	int height;
+	int width;
 
-	Rect(uint top, uint left, uint height, uint width) {
+	Rect(int top, int left, int height, int width) {
 		this->top = top;
 		this->left = left;
 		this->height = height;
 		this->width = width;
+	}
+
+	Rect(){}
+};
+
+struct Margin {
+	uint top;
+	uint left;
+	uint bottom;
+	uint right;
+
+	Margin(uint top, uint left, uint bottom, uint right) {
+		this->top = top;
+		this->left = left;
+		this->bottom = bottom;
+		this->right = right;
 	}
 };
 
