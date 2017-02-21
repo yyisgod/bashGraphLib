@@ -1,5 +1,5 @@
-LIBPATH=../bashGraphLib
-CPPFLAGS=-std=c++11 -limage -L. -static
+LIBPATH=../ImageLib
+CPPFLAGS=-std=c++11 -limage -L. -static -I$(LIBPATH)
 
 bomb:*.cpp *.h libimage.a
 	$(CXX) *.cpp -o bomb $(CPPFLAGS) -O3

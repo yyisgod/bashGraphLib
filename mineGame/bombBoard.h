@@ -10,8 +10,9 @@
 #ifndef _BOMBBOARD_H
 #define _BOMBBOARD_H
 
-#include "../ImageLib/win.h"
-#include "../ImageLib/graph.h"
+#include "Window.h"
+#include "Grid.h"
+#include "ControlComposite.h"
 
 class BombBoard {
 public:
@@ -30,7 +31,7 @@ public:
 	int setFlag(uint x, uint y);
 	int setBlank(uint x, uint y);
 	int setNum(uint x, uint y, uint num);
-	int getGrid(uint x, uint y); //get grid status
+	char getGrid(uint x, uint y); //get grid status
 	void print();
 
 private:
@@ -38,11 +39,17 @@ private:
 	uint y2Left(uint y);
 	int setBLOCK(uint x, uint y, char ch, color c = none);
 
+	void drawInnerRect();
+
 private:
-	Win *board;
+	Window *boardBg;
+	ControlComposite *boardCC;
+	Grid *boardGrid;
 	uint left;
-	const uint top = 2;
+	uint top;
 	uint _gameSize;
+
+	static char markA[];
 };
 
 #endif
