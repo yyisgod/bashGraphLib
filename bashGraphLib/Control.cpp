@@ -7,6 +7,7 @@
  ************************************************************************/
 
 #include "Control.h"
+#include "Window.h"
 
 const char* Control::name() {
 	return _name;
@@ -30,8 +31,16 @@ int Control::openColor() {
 }
 
 int Control::draw(Window& win) {
+	refresh();
 	Rect rt(0, 0, _buf->getHeight(), _buf->getWidth());
 	return win.insert(_top, _left, rt, *_buf);
+}
+
+int Control::getWidth() {
+	return _buf->getWidth();
+}
+int Control::getHeight() {
+	return _buf->getHeight();
 }
 
 int Control::setPosition(uint top, uint left) {
@@ -41,6 +50,7 @@ int Control::setPosition(uint top, uint left) {
 }
 
 int Control::copyTo(Control& dst) {
+	refresh();
 	return dst.getFromBuf(_buf, _top, _left);
 }
 
@@ -53,3 +63,5 @@ int Control::getFromBuf(DisplayUnit* buf, uint top, uint left) {
 	Rect rt(0, 0, buf->getHeight(), buf->getWidth());
 	return _buf->insert(top, left, rt, *buf);
 }
+
+void Control::refresh() {}

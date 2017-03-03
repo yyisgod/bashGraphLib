@@ -25,11 +25,6 @@ ControlComposite::~ControlComposite() {
 	}
 }
 
-int ControlComposite::draw(Window& win) {
-	refresh();
-	return Control::draw(win);
-}
-
 int ControlComposite::add(Control* ctl) {
 	if (ctl == nullptr) {
 		return -1;
@@ -50,16 +45,11 @@ int ControlComposite::remove(Control* ctl) {
 	return 0;
 }
 
-int ControlComposite::refresh() {
+void ControlComposite::refresh() {
 	_buf->clear();
 	for(auto c = _controls.begin(); c != _controls.end(); c++) {
 		if (*c != nullptr) {
 			(*c)->copyTo(*this);
 		}
 	}
-}
-
-int ControlComposite::copyTo(Control& dst) {
-	refresh();
-	Control::copyTo(dst);
 }

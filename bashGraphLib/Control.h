@@ -10,10 +10,12 @@
 #define _CONTROL_H
 
 #include "DisplayUnit.h"
-#include "Window.h"
+//#include "Window.h"
 #include <list>
 
-class Control{
+class Window;
+
+class Control {
 public:
 	virtual ~Control();
 
@@ -30,8 +32,13 @@ public:
 	virtual int getFromBuf(DisplayUnit* buf, uint top = 0, uint left = 0);
 	virtual std::list<Control*>::iterator createIterator(){};
 
+	int getWidth();
+	int getHeight();
+
 protected:
 	Control(const char* name);
+	// refresh buf data
+	virtual void refresh();
 
 protected:
 	DisplayUnit* _buf;
@@ -41,6 +48,5 @@ protected:
 
 private:
 	const char* _name;
-
 };
 #endif
