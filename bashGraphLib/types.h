@@ -12,22 +12,22 @@
 #define ERROR -1
 #define RIGHT 1
 
-#define NONE "\033[m"
-#define RED "\033[0;32;31m"
-#define LIGHT_RED "\033[1;31m"
-#define GREEN "\033[0;32;32m"
-#define LIGHT_GREEN "\033[1;32m"
-#define BLUE "\033[0;32;34m"
-#define LIGHT_BLUE "\033[1;34m"
-#define DARK_GRAY "\033[1;30m"
-#define CYAN "\033[0;36m"
-#define LIGHT_CYAN "\033[1;36m"
-#define PURPLE "\033[0;35m"
-#define LIGHT_PURPLE "\033[1;35m"
-#define BROWN "\033[0;33m"
-#define YELLOW "\033[1;33m"
-#define LIGHT_GRAY "\033[0;37m"
-#define WHITE "\033[1;37m"
+#define C_NONE "\033[m"
+#define C_RED "\033[0;32;31m"
+#define C_LIGHT_RED "\033[1;31m"
+#define C_GREEN "\033[0;32;32m"
+#define C_LIGHT_GREEN "\033[1;32m"
+#define C_BLUE "\033[0;32;34m"
+#define C_LIGHT_BLUE "\033[1;34m"
+#define C_DARK_GRAY "\033[1;30m"
+#define C_CYAN "\033[0;36m"
+#define C_LIGHT_CYAN "\033[1;36m"
+#define C_PURPLE "\033[0;35m"
+#define C_LIGHT_PURPLE "\033[1;35m"
+#define C_BROWN "\033[0;33m"
+#define C_YELLOW "\033[1;33m"
+#define C_LIGHT_GRAY "\033[0;37m"
+#define C_WHITE "\033[1;37m"
 
 #include "Error.h"
 
@@ -56,22 +56,22 @@ struct _colorMap {
 };
 
 const string colorsMap[16] = {
-	NONE,
-	RED,
-	LIGHT_RED,
-	GREEN,
-	LIGHT_GREEN,
-	BLUE,
-	LIGHT_BLUE,
-	DARK_GRAY,
-	CYAN,
-	LIGHT_CYAN,
-	PURPLE,
-	LIGHT_PURPLE,
-	BROWN,
-	YELLOW,
-	LIGHT_GRAY,
-	WHITE
+	C_NONE,
+	C_RED,
+	C_LIGHT_RED,
+	C_GREEN,
+	C_LIGHT_GREEN,
+	C_BLUE,
+	C_LIGHT_BLUE,
+	C_DARK_GRAY,
+	C_CYAN,
+	C_LIGHT_CYAN,
+	C_PURPLE,
+	C_LIGHT_PURPLE,
+	C_BROWN,
+	C_YELLOW,
+	C_LIGHT_GRAY,
+	C_WHITE
 };
 typedef unsigned int uint;
 
@@ -98,6 +98,13 @@ struct Margin {
 	uint right;
 
 	Margin(uint top, uint left, uint bottom, uint right) {
+		this->top = top;
+		this->left = left;
+		this->bottom = bottom;
+		this->right = right;
+	}
+
+	void set(uint top, uint left, uint bottom, uint right) {
 		this->top = top;
 		this->left = left;
 		this->bottom = bottom;

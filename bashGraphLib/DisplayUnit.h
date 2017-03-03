@@ -39,10 +39,14 @@ public:
 
 	int getWidth();
 	int getHeight();
-	int refresh();
-	int show();
+
+	virtual int show();
 
 protected:
+	DisplayUnit();
+	void initDisplayUnit(int height, int width); // used for later creater
+	virtual int refresh();
+	void deleteBuf();
 	/************************************************************************
 	 * descript the relative location of destination to this uint 
 	 * and funciton will adjust the rt for part insert unless return types is -1.
@@ -61,7 +65,6 @@ protected:
 	virtual int adjust(int& x, int& y);
 
 private:
-	DisplayUnit();
 	DisplayUnit(DisplayUnit&);
 	DisplayUnit operator=(DisplayUnit&);
 protected:

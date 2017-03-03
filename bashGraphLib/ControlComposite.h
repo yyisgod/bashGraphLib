@@ -18,16 +18,14 @@ public:
 	virtual ~ControlComposite();
 	ControlComposite(const char* name, uint height, uint width);
 
-	virtual int draw(Window&);
 	virtual int add(Control*); 
 	virtual int remove(Control*);
-	virtual int copyTo(Control& dst);
 	
 	virtual std::list<Control*>::iterator createIterator(){};
 
 protected:
 	// refresh buf data
-	virtual int refresh();
+	virtual void refresh();
 
 private:
 	list<Control*> _controls;

@@ -37,16 +37,7 @@ DisplayUnit::DisplayUnit(uint height, uint width, char** data):DisplayUnit(heigh
 }
 
 DisplayUnit::~DisplayUnit() { 
-	if (_buf) {
-		for (int i = 0; i < _height; i++)
-			delete []_buf[i];
-		delete []_buf;
-	}
-	if (_colorBuf) {
-		for (int i = 0; i < _height; i++)
-			delete []_colorBuf[i];
-		delete []_colorBuf;
-	}
+	deleteBuf();
 }
 
 int DisplayUnit::openColor() {
@@ -217,9 +208,15 @@ int DisplayUnit::getHeight() {
 }
 
 int DisplayUnit::refresh() {
+	return 0;
+}
+
+int DisplayUnit::show() {
 	if (_buf == NULL)
 		return -1;
 	
+	refresh();
+
 	if (!_colorBuf) // no color
 		for (int i = 0; i < _height; i++) {
 			for (int j = 0; j < _width; j++)
@@ -238,8 +235,24 @@ int DisplayUnit::refresh() {
 	return 0;
 }
 
-int DisplayUnit::show() {
-	return refresh();
+DisplayUnit::DisplayUnit() {}
+
+void DisplayUnit::initDisplayUnit(int height, int width) {
+	if ((_buf = new char*[height]) == NULL) {
+		throw CreateError("DisplayUnit", "Malloc err");
+		return;
+	}
+
+	for (int i = 0; i < height; i++) {
+		if ((_buf[i] = new char[width]) == NULL) {
+			throw CreateError("DisplayUnit", "Malloc err");
+			return;
+		}
+		std::memset(_buf[i], ' ', width);
+	}
+	_height = height; _width = width;
+	_colorBuf = NULL;
+	_region = Rect(0, 0 ,height, width);
 }
 
 int DisplayUnit::adjust(int& x, int& y, Rect& dataRt) {
@@ -309,4 +322,13 @@ int DisplayUnit::adjust(int& x, int& y) {
 			|| y < 0 || y > _region.width + _region.left)
 		return -1;
 	return 0;
+}
+
+void DisplayUnit::deleteBuf() {
+	if (_buf != nullptr) {
+		delete []_buf;
+	}
+	if (_colorBuf != nullptr) {
+		delete []_colorBuf;
+	}
 }
