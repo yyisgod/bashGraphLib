@@ -65,8 +65,6 @@ int Window::start(pLoopFunc loopFunc) {
 			cout << "Press Enter to exit...\n";
 		}
 
-	_keyThread->join();	// wait 
-
 	return WindowErrCode::NONE;
 }
 
@@ -163,6 +161,10 @@ int Window::init (uint height, uint width, WindowStyle::WindowStyle style) {
 	_colorful = false;
 
 	return WindowErrCode::NONE;
+}
+
+void Window::joinKeyThread() {
+	_keyThread->join();	// wait 
 }
 
 /*

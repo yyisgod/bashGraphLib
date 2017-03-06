@@ -1,7 +1,7 @@
 /*************************************************************************
   File name:    Error.h
   Version:      1.0
-  Description:  Error
+  Description:  Error类
   Author:       Yy <yyisgod@yeah.net>
   Create Date:  2016-09-02
  ************************************************************************/

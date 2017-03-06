@@ -52,6 +52,7 @@ public:
 
 	int start(pLoopFunc loopFunc = nullptr); // start main loop
 	void setKeyDealFunc(pKeyDealFunc keyDealFunc);
+	void joinKeyThread();
 
 protected:
 	virtual int refresh();
