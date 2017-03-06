@@ -11,31 +11,38 @@
 #include <ctime>
 #include <cstdlib>
 
-BombGame::BombGame() {
+BombGame::BombGame(pKeyDealFunc keyDealFunc) {
 	gameBoard = NULL;
+	_keyDealFunc = keyDealFunc;
 }
 
 void BombGame::newGame(uint gameSize, uint bombNum) { 
 	if (bombNum >= gameSize * gameSize || bombNum < 1){
 		throw CreateError("BombGame", "bombNum err");
 	} else {
-		if (gameBoard)
-			delete gameBoard;
-		try {
-			gameBoard = new BombBoard(gameSize);
-			_bombNum = bombNum;
-			_gameSize = gameSize;
-			if ((_mineGrid = new bool[_gameSize * _gameSize]()) == NULL)
-				throw CreateError("BombGame", "out of memory");
-			if ((_numGrid = new char[_gameSize * _gameSize]()) == NULL)
-				throw CreateError("BombGame", "out of memory");
-			_isWin = false;
-			_gameOver = false; // no over
-			randSetBombs();
-			calNums();
-		} catch (Error e) {
-			gameBoard = NULL;
-			throw e;
+		_bombNum = bombNum;
+		_gameOver = false; // no over
+		_gameSize = gameSize;
+		_isWin = false;
+		if (_mineGrid != nullptr)
+			delete _mineGrid;
+		if (_numGrid != nullptr)
+			delete _numGrid;
+		_mineGrid = new bool[_gameSize * _gameSize]();
+		_numGrid = new char[_gameSize * _gameSize]();
+		randSetBombs();
+		calNums();
+
+		if (gameBoard == nullptr) {
+			try {
+				gameBoard = new BombBoard(gameSize);
+				gameBoard->start(_keyDealFunc);
+			} catch (Error e) {
+				gameBoard = NULL;
+				throw e;
+			}
+		} else {
+			gameBoard->newBoard(gameSize);
 		}
 	}
 }
@@ -182,4 +189,8 @@ void BombGame::displayBombs() {
 		if (_mineGrid[i])
 			gameBoard->setBomb(i/_gameSize, i%_gameSize);
 	}
+}
+
+void BombGame::wait() {
+	gameBoard->wait();
 }

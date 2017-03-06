@@ -1,0 +1,14 @@
+LIBPATH=../ImageLib
+CPPFLAGS=-std=c++11 -pthread -I$(LIBPATH) -Wl,--no-as-needed
+
+bomb:*.cpp $(LIBPATH)/*.cpp 
+	$(CXX) $(CPPFLAGS) -O3 -c $^
+	g++ $(CPPFLAGS) *.o -o bomb
+
+g:*.cpp $(LIBPATH)/*.cpp 
+	$(CXX) $(CPPFLAGS) -g -c $^
+	g++ $(CPPFLAGS) -g *.o -o main
+
+.PHONY:clean
+clean:
+	rm libimage.a bomb *.o main

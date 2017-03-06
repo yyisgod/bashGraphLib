@@ -8,11 +8,21 @@
  ************************************************************************/
 
 #include "bombBoard.h"
+#include "BorderDecorator.h"
 #include <cstring>
 
 char BombBoard::markA[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 BombBoard::BombBoard(uint gameSize) {
+	newBoard(gameSize);	
+}
+
+BombBoard::~BombBoard() {
+	delete boardBg;
+	delete boardCC;
+}
+
+void BombBoard::newBoard(uint gameSize) {
 	int height, width;
 	
 	if(gameSize < 27 && gameSize > 1) {
@@ -23,29 +33,24 @@ BombBoard::BombBoard(uint gameSize) {
 		top = 1;
 		if (gameSize > 9) 
 			width += 2, left = 2;
-
-		if((boardBg = new Window(height, width)) == NULL) {
-			throw CreateError("BombBoard", "GameSize out");
+		if (boardBg == nullptr) {	
+			if((boardBg = new Window(height, width, WindowStyle::Thin)) == NULL) {
+				throw CreateError("BombBoard", "GameSize out");
+			}
+			if (boardBg->openColor() == -1)
+				throw CreateError("BombBoard", "Colorize error");
+		} else {
+			boardBg->resize(height, width, WindowStyle::Thin);
+			delete boardCC;
 		}
-		if (boardBg->openColor() == -1)
-			throw CreateError("BombBoard", "Colorize error");
+
 		init();
 	} else {
 		throw CreateError("BombBoard", "GameSize out");
 	}
 }
 
-BombBoard::~BombBoard() {
-	delete boardBg;
-	delete boardCC;
-}
-
 void BombBoard::init() {
-	// composite, content all elements
-	boardCC = new ControlComposite("boardCC", boardBg->getHeight()
-				, boardBg->getWidth());
-	boardCC->openColor();
-
 	// makr: A B C D E ... 1 2 3 4 5...
 	Grid *topMarkGrid = new Grid("topMarkGrid", 1, _gameSize, 1, 2, 0, 1);	
 	topMarkGrid->openColor();
@@ -67,28 +72,36 @@ void BombBoard::init() {
 	for (int i = 0; i < _gameSize; i++) {
 		char num[3] = { 0 };
 		sprintf(num, "%d", i + 1);
-		if (left == 2 && i < 10)
+		if (left == 2 && i < 9)
 			leftMarkGrid->set(i, 1, num, blue, 1);
 		else
 			leftMarkGrid->set(i, 0, num, blue, 2);
 		rightMarkGrid->set(i, 0, num, blue, strlen(num));
 	}
-	boardCC->add(topMarkGrid);
-	boardCC->add(botMarkGrid);
-	boardCC->add(leftMarkGrid);
-	boardCC->add(rightMarkGrid);
+	boardBg->add(topMarkGrid);
+	boardBg->add(botMarkGrid);
+	boardBg->add(leftMarkGrid);
+	boardBg->add(rightMarkGrid);
 
 	// core board
 	boardGrid = new Grid("boardGrid", _gameSize, _gameSize, 1, 2, 0, 1);
+	BorderDecorator* bd = new BorderDecorator("boardGridBorder", boardGrid, 1);
+	bd->openColor();
+	bd->setColor(yellow, yellow);
 	boardGrid->openColor();
-	boardGrid->setPosition(top + 1, left + 1);
+	bd->setPosition(top, left);
 
 	for (int i = 0; i < _gameSize; i++)
 		for ( int j = 0; j < _gameSize; j++) {
 			setBrick(i, j);
 		}
 
-	boardCC->add(boardGrid);
+	boardBg->add(bd);
+}
+
+int BombBoard::start(pKeyDealFunc keyDealFunc) {
+	boardBg->setKeyDealFunc(keyDealFunc);
+	return boardBg->start();
 }
 
 int BombBoard::setBrick(uint x, uint y) {
@@ -148,8 +161,6 @@ char BombBoard::getGrid(uint x, uint y) {
 }
 
 void BombBoard::print() {
-	boardCC->draw(*boardBg);
-	drawInnerRect();
 	boardBg->show();
 }
 
@@ -160,17 +171,6 @@ int BombBoard::setBLOCK(uint x, uint y, char ch, color c) {
 	return 0;
 }
 
-void BombBoard::drawInnerRect() {
-	for (int i = top + 1; i < top + _gameSize + 1; i++) {
-		boardBg->setPoint(i, left+_gameSize*2+1+1, '|'); 
-		boardBg->setPoint(i, left, '|');
-	}
-
-	std::memset(boardBg->getPointer(top, left + 1), '-', 2*_gameSize+1);
-	std::memset(boardBg->getPointer(top+_gameSize+1, left + 1), '-', 2*_gameSize+1);
-
-	boardBg->setPoint(top, left, '+');
-	boardBg->setPoint(top, left+_gameSize*2+2, '+');
-	boardBg->setPoint(top+_gameSize+1, left, '+');
-	boardBg->setPoint(top+_gameSize+1, left+_gameSize*2+2, '+');
+void BombBoard::wait() {
+	boardBg->joinKeyThread();
 }

@@ -23,6 +23,7 @@ public:
 
 public:
 	BombBoard(uint gameSize = 9);
+	void newBoard(uint gameSize = 9);
 	~BombBoard();
 
 	void init();
@@ -33,13 +34,13 @@ public:
 	int setNum(uint x, uint y, uint num);
 	char getGrid(uint x, uint y); //get grid status
 	void print();
+	int start(pKeyDealFunc keyDealFunc);
+	void wait();
 
 private:
 	uint x2Top(uint x);
 	uint y2Left(uint y);
 	int setBLOCK(uint x, uint y, char ch, color c = none);
-
-	void drawInnerRect();
 
 private:
 	Window *boardBg;

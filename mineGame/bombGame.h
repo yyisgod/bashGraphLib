@@ -14,13 +14,14 @@
 
 class BombGame {
 public:
-	BombGame();
+	BombGame(pKeyDealFunc keyDealFunc);
 	~BombGame();
 	void newGame(uint gameSize = 9, uint bombNum = 10);
 	void refresh();
 	int  dig(uint x, uint y);
 	void setFlag(uint x, uint y);
 	bool isWin();
+	void wait();
 
 private:
 	void randSetBombs();
@@ -38,7 +39,7 @@ private:
 	bool _isWin;
 	bool* _mineGrid;
 	char* _numGrid;
-
+	pKeyDealFunc _keyDealFunc;
 };
 
 #endif

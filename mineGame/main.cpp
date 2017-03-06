@@ -7,7 +7,7 @@
   Create Date:  2016-09-06
  ************************************************************************/
 
-#define NONE "\033[m"
+#define C_NONE "\033[m"
 #define RED "\033[0;32;31m"
 #include "bombGame.h"
 #include <iostream>
@@ -27,20 +27,22 @@ const char helpStr[] =
 " f 2 d\n";
 
 int newGame(BombGame& game, uint gameSize, uint mineNum);
-int parse(string order, uint& x, uint& y);
+int parse(Window& win, std::string cmd, std::vector<std::string>& params);
+string sTolower(string& str);
+void refresh();
+BombGame game(parse);
 
 bool isOver = false;
 
 int main() { 
-	BombGame game;
 	string input;
 	
 	cout << "------------------------------\n";
-	cout << RED << "Wellcome to mine game !\n" << NONE;
-	cout << RED << "          author : yy\n" << NONE;
+	cout << RED << "Wellcome to mine game !\n" << C_NONE;
+	cout << RED << "          author : yy\n" << C_NONE;
 	cout << "------------------------------\n";
 
-	cout << YELLOW << "Input gameSize[9] and mineNum[10]:" << NONE;
+	cout << C_YELLOW << "Input gameSize[9] and mineNum[10]:" << C_NONE;
 	uint gameSize, mineNum;
 	getline(cin, input);
 	if (input.empty()) {
@@ -52,65 +54,10 @@ int main() {
 
 	printf("Game set with gameSize = %u, mineNum = %u\n", gameSize, mineNum);
 
-	if (newGame(game, gameSize, mineNum) == -1)
-		return -1;
+	newGame(game, gameSize, mineNum);
 
-	game.refresh();
-	while(1) {
-		string order;
-		uint x, y;
-
-		cout << YELLOW << "Input order: " << NONE;
-		getline(cin, order);
-		
-		int rt;
-		if ((rt = parse(order, x, y)) == -1) {
-			cout << RED << "Input format error\n" << NONE;
-			continue;
-		}
-		cout << LIGHT_CYAN << "-------------------------\n" << NONE;
-		switch (rt) {
-		case 0: {// dig
-				if (isOver) {
-					cout << RED << "Game is over, please start a new game or quit\n" << NONE;
-					break;
-				}
-				int status = game.dig(x, y);
-				game.refresh();
-				if (status == 1) {
-					cout << RED << "You win!\n" << NONE;
-					isOver = true;
-				} else if (status == -1) {
-					cout << RED <<"Victory and defeat are both common in battle\n"
-						<< "Warrior please again.\n" << NONE;
-					isOver = true;
-				}
-			}
-			break;
-		case 1: // new game
-			if(newGame(game, x, y) != -1)
-				game.refresh();
-			break;
-		case 2: // quit
-			goto out;
-			break;
-		case 3: // flag
-			game.setFlag(x, y);
-			game.refresh();
-			break;
-
-		case 4: // help
-			printf(helpStr);
-			break;
-		}
-		cout << LIGHT_CYAN << "-------------------------\n" << NONE;
-	}
-
-out:
-		cout << "Exiting game ...\n";
-		cout << "Good bye!!!\n";
-		
-		return 0;
+	refresh();
+	game.wait();
 }
 
 int newGame(BombGame& game, uint gameSize, uint mineNum) {
@@ -129,60 +76,105 @@ int newGame(BombGame& game, uint gameSize, uint mineNum) {
 	return 0;
 }
 
-int parse(string order, uint& x, uint& y) {
-	char c = '\0', a = '\0';
-	istringstream o(order);
-	o >> c;
-	switch(c) {
-	case 'n':
-	case 'N':
-		x = y = 0;
-		o >> x >> y;
-		if (x == 0 || y == 0) {
-			x = 9;
-			y = 10;
+int parse(Window& win, std::string cmd, std::vector<std::string>& params) {
+	if (sTolower(cmd) == "n" || sTolower(cmd) == "new") {
+		int x = 9, y = 10;
+		if (params.size() == 2) {
+			try {
+				x = stoi(params[0]);
+				y = stoi(params[1]);
+			} catch (invalid_argument e) {
+				goto help;
+			}
 		}
-		return 1;
-		break;
 
-	case 'q':
-	case 'Q':
-		return 2;
-		break;
+		if(newGame(game, x, y) != -1)
+				game.refresh();
 
-	case 'f':
-	case 'F':
-		x = y = 0;
-		o >> x >> a;
-		if ( x == 0 || a == '\0')
-			return -1;
-		else {
-			x--;
-			y = tolower(a) - 'a';
-		}
-		return 3;
-		break;
-
-	case 'h':
-	case 'H':
-		return 4;
-		break;
-
-	case 'd':
-	case 'D':
-		x = y = 0;
-		o >> x >> a;
-		if ( x == 0 || a == '\0' || !isalpha(a))
-			return -1;
-		else {
-			x--;
-			y = tolower(a) - 'a';
-		}
 		return 0;
-		break;
-
-	default:
-		return 4;
 	}
+
+	if (sTolower(cmd) == "q" || sTolower(cmd) == "quit") {
+		cout << "Exiting game ...\n";
+		cout << "Good bye!!!\n";
+
+		return WindowMsgCode::EXIT_LOOP;
+	}
+
+	if (sTolower(cmd) == "f" || sTolower(cmd) == "flag") {
+		if (params.size() == 2) {
+			int x = 0, y = 0;
+			try {
+				x = stoi(params[0]) - 1;
+				char ch = params[1][0];
+				if (!isalpha(ch))
+					goto help;	
+				y = tolower(ch) - 'a'; 
+			} catch (invalid_argument e) {
+				goto help;
+			}
+
+			game.setFlag(x, y);
+			game.refresh();
+		} else
+			goto help;
+	}
+
+	if (sTolower(cmd) == "d" || sTolower(cmd) == "dig") {
+		if (params.size() == 2) {
+			int x = 0, y = 0;
+			try {
+				x = stoi(params[0]) - 1;
+				char ch = params[1][0];
+				if (!isalpha(ch))
+					goto help;	
+				y = tolower(ch) - 'a'; 
+			} catch (invalid_argument e) {
+				goto help;
+			}
+
+			if (isOver) {
+				cout << RED << "Game is over, please start a new game or quit\n" << C_NONE;
+				goto next;
+			}
+
+			int status = game.dig(x, y);
+			game.refresh();
+			if (status == 1) {
+				cout << RED << "You win!\n" << C_NONE;
+				isOver = true;
+				goto next;
+			} else if (status == -1) {
+				cout << RED <<"Victory and defeat are both common in battle\n"
+					<< "Warrior please again.\n" << C_NONE;
+				isOver = true;
+				goto next;
+			} else
+				goto next;
+		} else
+			goto help;
+	}
+
+	if (sTolower(cmd) == "h" || sTolower(cmd) == "help") {
+		goto help;
+	}
+
+help:
+	printf(helpStr);
+next:
+	cout << C_YELLOW << "Input order: " << C_NONE;
+	return 0;
 }
 
+string sTolower(string& str) {
+	string r = str;
+	for(int i = 0; i < r.length(); i++)
+		r[i] = tolower(r[i]);
+
+	return r;
+}
+
+void refresh() {
+	game.refresh();
+	cout << C_YELLOW << "Input order: " << C_NONE;
+}
